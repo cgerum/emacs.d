@@ -3,6 +3,8 @@
 			(:name clang-completion-mode :description "Clang Code-Completion minor mode, for use with C/Objective-C/C++" :type http :url "https://llvm.org/svn/llvm-project/cfe/trunk/utils/clang-completion-mode.el"))
  (el-get status "installed" recipe
 	 (:name el-get :website "https://github.com/dimitri/el-get#readme" :description "Manage the external elisp bits and pieces you depend upon." :type github :branch "4.stable" :pkgname "dimitri/el-get" :features el-get :info "." :load "el-get.el"))
+ (epresent status "installed" recipe
+	   (:name epresent :type github :pkgname "eschulte/epresent" :description "make presentation slides from a org-mode file within emacs" :autoloads t))
  (htmlize status "installed" recipe
 	  (:name htmlize :website "http://www.emacswiki.org/emacs/Htmlize" :description "Convert buffer text and decorations to HTML." :type http :url "http://fly.srk.fer.hr/~hniksic/emacs/htmlize.el.cgi" :localname "htmlize.el" :feature htmlize))
  (o-blog status "installed" recipe

@@ -52,6 +52,18 @@ Display a list of packages.
 
 ;;;***
 
+;;;### (autoloads (epresent-run) "epresent/epresent" "epresent/epresent.el"
+;;;;;;  (20662 20553))
+;;; Generated autoloads from epresent/epresent.el
+
+(autoload 'epresent-run "epresent/epresent" "\
+Present an Org-mode buffer.
+
+\(fn)" t nil)
+(global-set-key [f12] 'epresent-run)
+
+;;;***
+
 ;;;### (autoloads (htmlize-many-files-dired htmlize-many-files htmlize-file
 ;;;;;;  htmlize-region htmlize-buffer) "htmlize/htmlize" "htmlize/htmlize.el"
 ;;;;;;  (20599 21589))
@@ -292,7 +304,7 @@ See `yas-minor-mode' for more information on Yas minor mode.
 ;;;;;;  "o-blog/o-blog-i18n.el" "o-blog/o-blog-pkg.el" "o-blog/sample-init.el"
 ;;;;;;  "sr-speedbar/sr-speedbar.el" "yasnippet/dropdown-list.el"
 ;;;;;;  "yasnippet/yasnippet-debug.el" "yasnippet/yasnippet-tests.el")
-;;;;;;  (20662 18974 880217))
+;;;;;;  (20662 20554 967658))
 
 ;;;***
 
