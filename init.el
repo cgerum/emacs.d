@@ -49,3 +49,8 @@
 (require 'sr-speedbar)
 (setq sr-speedbar-right-side nil)
 (global-set-key (kbd "s-s") 'sr-speedbar-toggle)
+
+
+;;epresent
+
+(global-set-key [f12] 'epresent-run)
