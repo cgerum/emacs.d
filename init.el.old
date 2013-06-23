@@ -1,0 +1,83 @@
+;; el-get
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+   (lambda (s)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
+
+(setq el-get-sources
+      '(el-get
+	yasnippet
+	auto-complete
+	auto-complete-clang
+	emmet
+	epresent
+	sr-speedbar))
+
+(el-get 'sync)
+
+
+;;no splash screen
+(setq inhibit-splash-screen t)
+
+;;org
+(require 'org)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (C . t)
+   ;(c++ . t)
+   (css . t)
+   (ditaa . t)
+   (dot . t)
+   (emacs-lisp . t)
+   (gnuplot . t)
+   (java .t)
+   (js .t)
+   (latex . t)
+   (matlab . t)
+   (ocaml . t)
+   (org . t)
+   (plantuml . t)
+   (python . t)
+   (sh . t)
+   )
+ )
+
+(setq org-log-done 'time)
+
+;;Speedbar
+;(require 'sr-speedbar)
+;(setq sr-speedbar-right-side nil)
+;(global-set-key (kbd "s-s") 'sr-speedbar-toggle)
+
+
+;;epresent
+;(global-set-key [f12] 'epresent-run)
+
+;;Show Line Numbers at left side
+(global-linum-mode 1) 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-file-apps (quote ((auto-mode . emacs) ("\\.mm\\'" . default) ("\\.x?html?\\'" . default) ("\\.pdf\\'" . "evince %s")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+;;Use Yasnippet
+;;(require 'yasnippet)
+
+;;Use Clang autocomplete
+;;(require 'auto-complete)
+;;(require 'auto-complete-clang)
