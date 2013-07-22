@@ -11,7 +11,7 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 
-(require 'cl)	; common lisp goodies, loop
+require 'cl)	; common lisp goodies, loop
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
@@ -64,6 +64,7 @@
    color-theme-tango    ; check out color-theme-solarized
    org-mode
    epresent             ;Emacs Org-Mode Presentations
+   multiple-cursors     ;muktiple cursors mode
    ))	
 
 ;;
@@ -244,7 +245,7 @@ do (add-to-list 'my:el-get-packages p)))
 
 
 (ac-config-default)
-(define-key ac-mode-map  [(tab)] 'auto-complete)
+;(define-key ac-mode-map  [(tab)] 'auto-complete)
 
 ;(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
 ;(add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
@@ -258,4 +259,7 @@ do (add-to-list 'my:el-get-packages p)))
 
 (add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
 
-
+;; recentf stuff
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
