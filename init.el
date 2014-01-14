@@ -11,9 +11,10 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 
-require 'cl)	; common lisp goodies, loop
+;(require 'cl)	; common lisp goodies, loop
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(add-to-list 'load-path "~/.emacs.d/")
 
 (unless (require 'el-get nil t)
   (url-retrieve
@@ -58,7 +59,7 @@ require 'cl)	; common lisp goodies, loop
    php-mode-improved	; if you're into php...
    switch-window	; takes over C-x o
    auto-complete	; complete as you type with overlays
-   auto-complete-clang
+   ;auto-complete-clang
    zencoding-mode	; http://www.emacswiki.org/emacs/ZenCoding
    color-theme	; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
@@ -130,10 +131,6 @@ do (add-to-list 'my:el-get-packages p)))
 ; winner-mode provides C-<left> to get back to previous window layout
 (winner-mode 1)
 
-;; whenever an external process changes a file underneath emacs, and there
-;; was no unsaved changes in the corresponding buffer, just revert its
-;; content to reflect what's on-disk.
-(global-auto-revert-mode 1)
 
 ;; M-x shell is a nice shell interface to use, let's make it colorful. If
 ;; you need a terminal emulator rather than just a shell, consider M-x term
@@ -216,7 +213,6 @@ do (add-to-list 'my:el-get-packages p)))
 
 ;;Clang Autocomplete
 (require 'auto-complete-config)
-(require 'auto-complete-clang)
  
 (setq ac-clang-flags
       (mapcar (lambda (item)(concat "-I" item))
@@ -245,7 +241,7 @@ do (add-to-list 'my:el-get-packages p)))
 
 
 (ac-config-default)
-;(define-key ac-mode-map  [(tab)] 'auto-complete)
+(define-key ac-mode-map  [(tab)] 'auto-complete)
 
 ;(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
 ;(add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
@@ -263,3 +259,18 @@ do (add-to-list 'my:el-get-packages p)))
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
+
+(require 'auto-complete-clang-async)
+(defun ac-cc-mode-setup ()
+  (setq ac-clang-complete-executable "~/.emacs.d/clang-complete")
+  (setq ac-sources '(ac-source-clang-async))
+  (ac-clang-launch-completion-process)
+)
+
+(defun my-ac-config ()
+  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
+  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
+  (global-auto-complete-mode t))
+
+(my-ac-config)
+(put 'upcase-region 'disabled nil)
