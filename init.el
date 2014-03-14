@@ -97,14 +97,6 @@ do (add-to-list 'my:el-get-packages p)))
 
 (tool-bar-mode -1)	; no tool bar with icons
 (scroll-bar-mode -1)	; no scroll bars
-;(unless (string-match "apple-darwin" system-configuration)
-  ;; on mac, there's always a menu bar drown, don't have it empty
- ; (menu-bar-mode -1))
-
-;; choose your own fonts, in a system dependant way
-(if (string-match "apple-darwin" system-configuration)
-    (set-face-font 'default "Monaco-13")
-  (set-face-font 'default "Monospace-10"))
 
 (global-hl-line-mode)	; highlight current line
 (global-linum-mode 1)	; add line numbers on the left
@@ -114,12 +106,6 @@ do (add-to-list 'my:el-get-packages p)))
 
 ;; copy/paste with C-c and C-v and C-x, check out C-RET too
 (cua-mode)
-
-;; under mac, have Command as Meta and keep Option for localized input
-(when (string-match "apple-darwin" system-configuration)
-  (setq mac-allow-anti-aliasing t)
-  (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier 'none))
 
 ;; Use the clipboard, pretty please, so that copy/paste "works"
 (setq x-select-enable-clipboard t)
@@ -184,7 +170,7 @@ do (add-to-list 'my:el-get-packages p)))
  'org-babel-load-languages
  '(
    (C . t)
-   ;(c++ . t)
+   ;(C++ . t)
    (css . t)
    (ditaa . t)
    (dot . t)
@@ -207,70 +193,11 @@ do (add-to-list 'my:el-get-packages p)))
 ;;EPresent
 (global-set-key [f12] 'epresent-run)
 
-;;Yasnippet
-(yas-global-mode 1)
-
 
 ;;Clang Autocomplete
 (require 'auto-complete-config)
- 
-(setq ac-clang-flags
-      (mapcar (lambda (item)(concat "-I" item))
-              (split-string
-               "
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/backward
- /usr/local/include
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/include
- /usr/include
-"
-               )))
-
-
-
-
-(setq-default ac-sources '(;;ac-source-abbrev 
-			   ;;ac-source-dictionary 
-			   ac-source-words-in-same-mode-buffers
-			   ac-source-yasnippet))
-
-(dolist (m '(java-mode text-mode latex-mode))
-  (add-to-list 'ac-modes m))
-(global-auto-complete-mode 1)
-
-
 (ac-config-default)
-(define-key ac-mode-map  [(tab)] 'auto-complete)
 
-;(add-hook 'emacs-lisp-mode-hook 'ac-emacs-lisp-mode-setup)
-;(add-hook 'ruby-mode-hook 'ac-ruby-mode-setup)
-;(add-hook 'css-mode-hook 'ac-css-mode-setup)
-;;(add-hook 'auto-complete-mode-hook 'ac-common-setup)
-
-
-(defun my-ac-cc-mode-setup ()
-  (setq ac-sources (append '(ac-source-clang) 
-			   ac-sources)))
-
-(add-hook 'c-mode-common-hook 'my-ac-cc-mode-setup)
-
-;; recentf stuff
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-
-(require 'auto-complete-clang-async)
-(defun ac-cc-mode-setup ()
-  (setq ac-clang-complete-executable "~/.emacs.d/clang-complete")
-  (setq ac-sources '(ac-source-clang-async))
-  (ac-clang-launch-completion-process)
-)
-
-(defun my-ac-config ()
-  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
-  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-  (global-auto-complete-mode t))
-
-(my-ac-config)
-(put 'upcase-region 'disabled nil)
+;;Yasnippet
+(require 'yasnippet)
+(yas-global-mode 1)
