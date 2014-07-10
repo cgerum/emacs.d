@@ -11,10 +11,9 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 
-;(require 'cl)	; common lisp goodies, loop
+(require 'cl)	; common lisp goodies, loop
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(add-to-list 'load-path "~/.emacs.d/")
 
 (unless (require 'el-get nil t)
   (url-retrieve
@@ -27,6 +26,7 @@
 
 ;; now either el-get is `require'd already, or have been `load'ed by the
 ;; el-get installer.
+
 
 ;; set local recipes
 (setq
@@ -56,18 +56,16 @@
 ;; now set our own packages
 (setq
  my:el-get-packages
- '(el-get	; el-get is self-hosting
-   escreen ; screen for emacs, C-\ C-h
+ '(escreen              ; screen for emacs, C-\ C-h
    php-mode-improved	; if you're into php...
    switch-window	; takes over C-x o
-   auto-complete	; complete as you type with overlays
-   ;auto-complete-clang
-   zencoding-mode	; http://www.emacswiki.org/emacs/ZenCoding
-   color-theme	; nice looking emacs
+   company-mode         ; autocompletion support
+   color-theme	        ; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
    org-mode
    epresent             ;Emacs Org-Mode Presentations
-   multiple-cursors     ;muktiple cursors mode
+   multiple-cursors     ;multiple cursors mode
+   helm                 ;Better completion browsing
    ))	
 
 ;;
@@ -142,12 +140,15 @@ do (add-to-list 'my:el-get-packages p)))
 (define-key term-raw-map (kbd "C-y") 'term-paste)
 
 ;; use ido for minibuffer completion
-(require 'ido)
-(ido-mode t)
-(setq ido-save-directory-list-file "~/.emacs.d/.ido.last")
-(setq ido-enable-flex-matching t)
-(setq ido-use-filename-at-point 'guess)
-(setq ido-show-dot-for-dired t)
+;(require 'ido)
+;(ido-mode t)
+;(setq ido-save-directory-list-file "~/.emacs.d/.ido.last")
+;(setq ido-enable-flex-matching t)
+;(setq ido-use-filename-at-point 'guess)
+;(setq ido-show-dot-for-dired t)
+
+;;Enable Helm Mode for completion
+(helm-mode 1)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
 ;;
@@ -196,14 +197,37 @@ do (add-to-list 'my:el-get-packages p)))
 (global-set-key [f12] 'epresent-run)
 
 
-;;Clang Autocomplete
-(require 'auto-complete-config)
-(ac-config-default)
-
 ;;Yasnippet
 (require 'yasnippet)
 (yas-global-mode 1)
 
+
+;;Company-Mode
+(add-hook 'after-init-hook 'global-company-mode)
+
+(defun check-expansion ()
+  (save-excursion
+    (if (looking-at "\\_>") t
+      (backward-char 1)
+      (if (looking-at "\\.") t
+	(backward-char 1)
+	(if (looking-at "->") t nil)))))
+
+(defun do-yas-expand ()
+  (let ((yas/fallback-behavior 'return-nil))
+    (yas/expand)))
+
+(defun tab-indent-or-complete ()
+  (interactive)
+  (if (minibufferp)
+      (minibuffer-complete)
+    (if (or (not yas/minor-mode)
+	    (null (do-yas-expand)))
+	(if (check-expansion)
+	    (company-complete-common)
+	  (indent-for-tab-command)))))
+
+(global-set-key [tab] 'tab-indent-or-complete)
 
 
 (defun org-hex-strip-lead (str)
