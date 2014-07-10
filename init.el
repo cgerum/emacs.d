@@ -23,6 +23,8 @@
      (end-of-buffer)
      (eval-print-last-sexp))))
 
+(el-get 'sync)
+
 ;; now either el-get is `require'd already, or have been `load'ed by the
 ;; el-get installer.
 
