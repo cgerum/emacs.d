@@ -201,3 +201,43 @@ do (add-to-list 'my:el-get-packages p)))
 ;;Yasnippet
 (require 'yasnippet)
 (yas-global-mode 1)
+
+
+
+(defun org-hex-strip-lead (str)
+  (if (and (> (length str) 2) (string= (substring str 0 2) "0x"))
+      (substring str 2) str))
+
+(defun org-hex-to-hex (int)
+  (format "0x%x" int))
+
+(defun org-hex-to-dec (str)
+  (cond
+   ((and (stringp str)
+         (string-match "\\([0-9a-f]+\\)" (setf str (org-hex-strip-lead str))))
+    (let ((out 0))
+      (mapc
+       (lambda (ch)
+         (setf out (+ (* out 16)
+                      (if (and (>= ch 48) (<= ch 57)) (- ch 48) (- ch 87)))))
+       (coerce (match-string 1 str) 'list))
+      out))
+   ((stringp str) (string-to-number str))
+   (t str)))
+
+(defmacro with-hex (hex-output-p &rest exprs)
+  "Evaluate an org-table formula, converting all fields that look
+    like hexadecimal to decimal integers.  If HEX-OUTPUT-P then
+    return the result as a hex value."
+  (list
+   (if hex-output-p 'org-hex-to-hex 'identity)
+   (cons 'progn
+         (mapcar
+          (lambda (expr)
+            `,(cons (car expr)
+                    (mapcar (lambda (el)
+                              (if (listp el)
+                                  (list 'with-hex nil el)
+                                (org-hex-to-dec el)))
+                            (cdr expr))))
+          `,@exprs))))
