@@ -11,21 +11,17 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 
-(require 'cl)	; common lisp goodies, loop
 
+(require 'cl)	; common lisp goodies, loop
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
+
 (unless (require 'el-get nil t)
-  (url-retrieve
-   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
-   (lambda (s)
-     (end-of-buffer)
-     (eval-print-last-sexp))))
-
-(el-get 'sync)
-
-;; now either el-get is `require'd already, or have been `load'ed by the
-;; el-get installer.
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
+    (end-of-buffer)
+    (eval-print-last-sexp)))
 
 
 ;; set local recipes
@@ -57,7 +53,6 @@
 (setq
  my:el-get-packages
  '(escreen              ; screen for emacs, C-\ C-h
-   php-mode-improved	; if you're into php...
    switch-window	; takes over C-x o
    company-mode         ; autocompletion support
    color-theme	        ; nice looking emacs
@@ -66,6 +61,10 @@
    epresent             ;Emacs Org-Mode Presentations
    multiple-cursors     ;multiple cursors mode
    helm                 ;Better completion browsing
+   irony-mode           ;Clang based completion
+   auctex               ;Latex Mode
+   jedi                 ;python mode
+   multi-term           ;terminal-emulator
    ))	
 
 ;;
@@ -91,6 +90,7 @@ do (add-to-list 'my:el-get-packages p)))
 (el-get 'sync my:el-get-packages)
 
 ;; on to the visual settings
+(set-default-font "Liberation Mono 14") ;Select default font
 (setq inhibit-splash-screen t)	; no splash screen, thanks
 (line-number-mode 1)	; have line numbers and
 (column-number-mode 1)	; column numbers in the mode line
@@ -138,14 +138,6 @@ do (add-to-list 'my:el-get-packages p)))
 ;; Have C-y act as usual in term-mode, to avoid C-' C-y C-'
 ;; Well the real default would be C-c C-j C-y C-c C-k.
 (define-key term-raw-map (kbd "C-y") 'term-paste)
-
-;; use ido for minibuffer completion
-;(require 'ido)
-;(ido-mode t)
-;(setq ido-save-directory-list-file "~/.emacs.d/.ido.last")
-;(setq ido-enable-flex-matching t)
-;(setq ido-use-filename-at-point 'guess)
-;(setq ido-show-dot-for-dired t)
 
 ;;Enable Helm Mode for completion
 (helm-mode 1)
@@ -201,6 +193,17 @@ do (add-to-list 'my:el-get-packages p)))
 (require 'yasnippet)
 (yas-global-mode 1)
 
+;;Auctex
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+
+(add-hook 'LaTeX-mode-hook 'visual-line-mode)
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+
+(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+(setq reftex-plug-into-AUCTeX t)
 
 ;;Company-Mode
 (add-hook 'after-init-hook 'global-company-mode)
@@ -229,6 +232,23 @@ do (add-to-list 'my:el-get-packages p)))
 
 (global-set-key [tab] 'tab-indent-or-complete)
 
+;; Company Irony
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
+
+(add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+
+;;Irony Mode
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c-mode-hook 'irony-mode)
+(add-hook 'objc-mode-hook 'irony-mode)
+(defun my-irony-mode-hook ()
+  (define-key irony-mode-map [remap completion-at-point]
+    'irony-completion-at-point-async)
+  (define-key irony-mode-map [remap complete-symbol]
+    'irony-completion-at-point-async))
+(add-hook 'irony-mode-hook 'my-irony-mode-hook)
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
 
 (defun org-hex-strip-lead (str)
   (if (and (> (length str) 2) (string= (substring str 0 2) "0x"))
@@ -267,3 +287,9 @@ do (add-to-list 'my:el-get-packages p)))
                                 (org-hex-to-dec el)))
                             (cdr expr))))
           `,@exprs))))
+
+
+
+;;Python
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:complete-on-dot t)  
