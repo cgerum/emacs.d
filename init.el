@@ -13,6 +13,20 @@
 
 
 (require 'cl)	; common lisp goodies, loop
+
+(require 'package)
+(add-to-list 'package-archives
+  ;; The 't' means to append, so that MELPA comes after the more
+  ;; stable ELPA archive.
+  '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+;; Add ELPA if necessary. Looking at the El-Get package.rcp recipe in
+;; ~/local/opt/el-get/recipes it seems this is probably unnecessary.
+(when (< emacs-major-version 24)
+  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+
+(package-initialize)
+
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
 
@@ -23,6 +37,11 @@
     (end-of-buffer)
     (eval-print-last-sexp)))
 
+
+
+(require 'el-get-elpa)
+(unless (file-directory-p el-get-recipe-path-elpa)
+  (el-get-elpa-build-local-recipes))
 
 ;; set local recipes
 (setq
@@ -55,6 +74,10 @@
  '(escreen              ; screen for emacs, C-\ C-h
    switch-window	; takes over C-x o
    company-mode         ; autocompletion support
+   company-irony        ; 
+   company-c-headers    ;
+   company-anaconda     ;
+   flycheck             ;
    color-theme	        ; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
    org-mode
@@ -63,8 +86,9 @@
    helm                 ;Better completion browsing
    irony-mode           ;Clang based completion
    auctex               ;Latex Mode
-   jedi                 ;python mode
+   ;jedi                ;python mode
    multi-term           ;terminal-emulator
+   cpputils-cmake
    ))	
 
 ;;
@@ -238,17 +262,31 @@ do (add-to-list 'my:el-get-packages p)))
 
 (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 
-;;Irony Mode
-(add-hook 'c++-mode-hook 'irony-mode)
-(add-hook 'c-mode-hook 'irony-mode)
-(add-hook 'objc-mode-hook 'irony-mode)
-(defun my-irony-mode-hook ()
-  (define-key irony-mode-map [remap completion-at-point]
-    'irony-completion-at-point-async)
-  (define-key irony-mode-map [remap complete-symbol]
-    'irony-completion-at-point-async))
-(add-hook 'irony-mode-hook 'my-irony-mode-hook)
-(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+;;Company Anaconda
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-anaconda))
+
+
+;;Company C-Headers
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-c-headers))
+
+;;Flycheck syntax checking for emacs
+(add-hook 'after-init-hook 'global-flycheck-mode)
+
+
+;;Flyspell
+(add-hook 'c-mode-hook 
+	  (lambda ()
+	    (flyspell-prog-mode)))
+(add-hook 'c++-mode-hook 
+	  (lambda ()
+	    (flyspell-prog-mode)))
+(add-hook 'python-mode-hook 
+	  (lambda ()
+	    (flyspell-prog-mode)))
+
+(add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
 (defun org-hex-strip-lead (str)
   (if (and (> (length str) 2) (string= (substring str 0 2) "0x"))
@@ -291,5 +329,5 @@ do (add-to-list 'my:el-get-packages p)))
 
 
 ;;Python
-(add-hook 'python-mode-hook 'jedi:setup)
-(setq jedi:complete-on-dot t)  
+;;(add-hook 'python-mode-hook 'jedi:setup)
+;;(setq jedi:complete-on-dot t)  
