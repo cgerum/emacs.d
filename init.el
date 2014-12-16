@@ -1,4 +1,6 @@
-;; Copyright: (C) 2013 Christoph Gerum
+;;; package --- Emacs initialization file
+;;; Commentary: 
+;; Copyright: (C) 2013-2014 Christoph Gerum
 ;; Based on
 ;; emacs kicker --- kick start emacs setup
 ;; Copyright (C) 2010 Dimitri Fontaine
@@ -11,9 +13,7 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 
-
-(require 'cl)	; common lisp goodies, loop
-
+;;; Code:
 (require 'package)
 (add-to-list 'package-archives
   ;; The 't' means to append, so that MELPA comes after the more
@@ -72,6 +72,7 @@
 (setq
  my:el-get-packages
  '(escreen              ; screen for emacs, C-\ C-h
+   e2wm                 ; Code-Perspectives for Emacs
    switch-window	; takes over C-x o
    company-mode         ; autocompletion support
    company-irony        ; 
@@ -86,7 +87,6 @@
    helm                 ;Better completion browsing
    irony-mode           ;Clang based completion
    auctex               ;Latex Mode
-   ;jedi                ;python mode
    multi-term           ;terminal-emulator
    cpputils-cmake
    ))	
@@ -167,7 +167,6 @@ do (add-to-list 'my:el-get-packages p)))
 (helm-mode 1)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
-;;
 ;; when you do that, to kill emacs either close its frame from the window
 ;; manager or do M-x kill-emacs. Don't need a nice shortcut for a once a
 ;; week (or day) action.
@@ -288,6 +287,27 @@ do (add-to-list 'my:el-get-packages p)))
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
+;; Coding perspectives using e2wm
+(require 'e2wm)
+(global-set-key (kbd "M-+") 'e2wm:start-management)
+
+
+;; cppcm-utils cmake-mode
+(require 'cpputils-cmake)
+
+(add-hook 'c-mode-common-hook
+          (lambda ()
+            (if (derived-mode-p 'c-mode 'c++-mode)
+                (cppcm-reload-all)
+              )))
+
+(setq cppcm-write-flymake-makefile nil)
+
+;; avoid typing full path when starting gdb
+(global-set-key (kbd "C-c C-g")
+ '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
+
+
 (defun org-hex-strip-lead (str)
   (if (and (> (length str) 2) (string= (substring str 0 2) "0x"))
       (substring str 2) str))
@@ -327,7 +347,7 @@ do (add-to-list 'my:el-get-packages p)))
           `,@exprs))))
 
 
+(provide 'init)
+;;; init.el ends here
 
-;;Python
-;;(add-hook 'python-mode-hook 'jedi:setup)
-;;(setq jedi:complete-on-dot t)  
+
