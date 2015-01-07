@@ -214,6 +214,8 @@ do (add-to-list 'my:el-get-packages p)))
 
 ;;Yasnippet
 (require 'yasnippet)
+(setq yas-snippet-dirs (append yas-snippet-dirs
+                               '("~/.emacs.d/snippets")))
 (yas-global-mode 1)
 
 ;;Auctex

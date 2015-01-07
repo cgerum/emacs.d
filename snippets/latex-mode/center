@@ -1,0 +1,10 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: center
+# key: ce
+# binding: direct-keybinding
+# --
+\begin{center}
+$0
+\end{center}
+
+
