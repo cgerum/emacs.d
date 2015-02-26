@@ -1,0 +1,12 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: exc
+# key: exc
+# binding: direct-keybinding
+# --
+#ifdef __cplusplus
+extern "C" {
+#endif
+$0
+#ifdef __cplusplus
+}
+#endif
