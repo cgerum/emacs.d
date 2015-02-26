@@ -1,6 +1,6 @@
 ;;; package --- Emacs initialization file
 ;;; Commentary: 
-;; Copyright: (C) 2013-2014 Christoph Gerum
+;; Copyright: (C) 2013-2015 Christoph Gerum
 ;; Based on
 ;; emacs kicker --- kick start emacs setup
 ;; Copyright (C) 2010 Dimitri Fontaine
@@ -89,6 +89,7 @@
    auctex               ;Latex Mode
    multi-term           ;terminal-emulator
    cpputils-cmake
+   org-reveal            ; html5 slides for org-mode
    ))	
 
 ;;
