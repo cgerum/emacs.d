@@ -12,7 +12,6 @@
 ;; Licence: WTFPL, grab your copy here: http://sam.zoy.org/wtfpl/
 ;;
 ;; This file is NOT part of GNU Emacs.
-
 ;;; Code:
 (require 'package)
 (add-to-list 'package-archives
@@ -90,6 +89,9 @@
    multi-term           ;terminal-emulator
    cpputils-cmake
    org-reveal            ; html5 slides for org-mode
+   fill-column-indicator
+   cmake-mode
+   cmake-font-lock
    ))	
 
 ;;
@@ -311,6 +313,8 @@ do (add-to-list 'my:el-get-packages p)))
  '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
 
 
+
+;;Macros for org-mode
 (defun org-hex-strip-lead (str)
   (if (and (> (length str) 2) (string= (substring str 0 2) "0x"))
       (substring str 2) str))
@@ -349,6 +353,19 @@ do (add-to-list 'my:el-get-packages p)))
                             (cdr expr))))
           `,@exprs))))
 
+
+
+
+;; TRAMP
+(setq tramp-default-method "ssh")
+
+
+;; uniquify.el is a helper routine to help give buffer names a better unique name.
+(when (load "uniquify" 'NOERROR)
+  (require 'uniquify)
+  (setq uniquify-buffer-name-style 'forward)
+  ;(setq uniquify-buffer-name-style 'post-forward)
+  )
 
 (provide 'init)
 ;;; init.el ends here
