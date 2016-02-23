@@ -92,6 +92,7 @@
    fill-column-indicator
    cmake-mode
    cmake-font-lock
+   yaml-mode            ;syntax highlighting for yaml
    ))	
 
 ;;
@@ -371,3 +372,4 @@ do (add-to-list 'my:el-get-packages p)))
 ;;; init.el ends here
 
 
+(put 'scroll-left 'disabled nil)
