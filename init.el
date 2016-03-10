@@ -37,7 +37,6 @@
     (eval-print-last-sexp)))
 
 
-
 (require 'el-get-elpa)
 (unless (file-directory-p el-get-recipe-path-elpa)
   (el-get-elpa-build-local-recipes))
@@ -77,6 +76,8 @@
    company-irony        ; 
    company-c-headers    ;
    company-anaconda     ;
+   company-math         ;
+   company-auctex       ;
    flycheck             ;
    color-theme	        ; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
@@ -84,6 +85,7 @@
    epresent             ;Emacs Org-Mode Presentations
    multiple-cursors     ;multiple cursors mode
    helm                 ;Better completion browsing
+   helm-company         ;
    irony-mode           ;Clang based completion
    auctex               ;Latex Mode
    multi-term           ;terminal-emulator
@@ -93,6 +95,8 @@
    cmake-mode
    cmake-font-lock
    yaml-mode            ;syntax highlighting for yaml
+   magit
+   
    ))	
 
 ;;
