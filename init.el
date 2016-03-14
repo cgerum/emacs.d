@@ -1,6 +1,6 @@
 ;;; package --- Emacs initialization file
 ;;; Commentary: 
-;; Copyright: (C) 2013-2015 Christoph Gerum
+;; Copyright: (C) 2013-2016 Christoph Gerum
 ;; Based on
 ;; emacs kicker --- kick start emacs setup
 ;; Copyright (C) 2010 Dimitri Fontaine
@@ -13,33 +13,20 @@
 ;;
 ;; This file is NOT part of GNU Emacs.
 ;;; Code:
-(require 'package)
-(add-to-list 'package-archives
-  ;; The 't' means to append, so that MELPA comes after the more
-  ;; stable ELPA archive.
-  '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
-;; Add ELPA if necessary. Looking at the El-Get package.rcp recipe in
-;; ~/local/opt/el-get/recipes it seems this is probably unnecessary.
-(when (< emacs-major-version 24)
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-
-(package-initialize)
+(require 'cl)	; common lisp goodies, loop
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
+(unless (require 'el-get nil 'noerror)
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "http://melpa.org/packages/"))
+  (package-refresh-contents)
+  (package-initialize)
+  (package-install 'el-get)
+  (require 'el-get))
 
-(unless (require 'el-get nil t)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://github.com/dimitri/el-get/raw/master/el-get-install.el")
-    (end-of-buffer)
-    (eval-print-last-sexp)))
-
-
-(require 'el-get-elpa)
-(unless (file-directory-p el-get-recipe-path-elpa)
-  (el-get-elpa-build-local-recipes))
+(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 
 ;; set local recipes
 (setq
@@ -51,12 +38,6 @@
 		   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
 		   (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
 
-   (:name smex	; a better (ido like) M-x
-	  :after (progn
-		   (setq smex-save-file "~/.emacs.d/.smex-items")
-		   (global-set-key (kbd "M-x") 'smex)
-		   (global-set-key (kbd "M-X") 'smex-major-mode-commands)))
-
    (:name magit	; git meet emacs, and a binding
 	  :after (progn()
 		       (global-set-key (kbd "C-x C-z") 'magit-status)))
@@ -65,6 +46,7 @@
 	  :after (progn
 		   ;; when using AZERTY keyboard, consider C-x C-_
 		   (global-set-key (kbd "C-x C-_") 'goto-last-change)))))
+
 
 ;; now set our own packages
 (setq
@@ -78,7 +60,7 @@
    company-anaconda     ;
    company-math         ;
    company-auctex       ;
-   flycheck             ;
+					;flycheck             ;
    color-theme	        ; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
    org-mode
@@ -86,6 +68,7 @@
    multiple-cursors     ;multiple cursors mode
    helm                 ;Better completion browsing
    helm-company         ;
+   ;helm-gitlab          ;
    irony-mode           ;Clang based completion
    auctex               ;Latex Mode
    multi-term           ;terminal-emulator
@@ -93,10 +76,10 @@
    org-reveal            ; html5 slides for org-mode
    fill-column-indicator
    cmake-mode
-   cmake-font-lock
    yaml-mode            ;syntax highlighting for yaml
-   magit
-   
+   aggressive-indent-mode    ;changes indentation as you type
+   dash-at-point        ;Show documentation and snippets
+   helm-dash            ;Search documentation with helm
    ))	
 
 ;;
@@ -172,6 +155,11 @@ do (add-to-list 'my:el-get-packages p)))
 (define-key term-raw-map (kbd "C-y") 'term-paste)
 
 ;;Enable Helm Mode for completion
+(global-set-key (kbd "M-x")       'undefined)
+(global-set-key (kbd "M-x")       'helm-M-x)
+(global-set-key (kbd "C-x r b")   'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f")   'helm-find-files)
+
 (helm-mode 1)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
@@ -196,7 +184,7 @@ do (add-to-list 'my:el-get-packages p)))
  'org-babel-load-languages
  '(
    (C . t)
-   ;(C++ . t)
+   ;(c++ . t)
    (css . t)
    (ditaa . t)
    (dot . t)
@@ -281,7 +269,7 @@ do (add-to-list 'my:el-get-packages p)))
   '(add-to-list 'company-backends 'company-c-headers))
 
 ;;Flycheck syntax checking for emacs
-(add-hook 'after-init-hook 'global-flycheck-mode)
+;(add-hook 'after-init-hook 'global-flycheck-mode)
 
 
 ;;Flyspell
@@ -364,6 +352,12 @@ do (add-to-list 'my:el-get-packages p)))
 ;; TRAMP
 (setq tramp-default-method "ssh")
 
+;;Aggressive init mode for c++
+(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+(add-hook 'ruby-mode-hook #'aggressive-indent-mode)
+(add-hook 'scala-mode-hook #'aggressive-indent-mode)
+(add-hook 'cc-mode-hook #'aggressive-indent-mode)
 
 ;; uniquify.el is a helper routine to help give buffer names a better unique name.
 (when (load "uniquify" 'NOERROR)
@@ -372,8 +366,7 @@ do (add-to-list 'my:el-get-packages p)))
   ;(setq uniquify-buffer-name-style 'post-forward)
   )
 
+(put 'scroll-left 'disabled nil)
+
 (provide 'init)
 ;;; init.el ends here
-
-
-(put 'scroll-left 'disabled nil)
