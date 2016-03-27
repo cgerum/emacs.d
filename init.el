@@ -17,16 +17,12 @@
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-(unless (require 'el-get nil 'noerror)
-  (require 'package)
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.org/packages/"))
-  (package-refresh-contents)
-  (package-initialize)
-  (package-install 'el-get)
-  (require 'el-get))
-
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+   (lambda (s)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
 
 ;; set local recipes
 (setq
@@ -52,7 +48,6 @@
 (setq
  my:el-get-packages
  '(escreen              ; screen for emacs, C-\ C-h
-   e2wm                 ; Code-Perspectives for Emacs
    switch-window	; takes over C-x o
    company-mode         ; autocompletion support
    company-irony        ; 
@@ -63,12 +58,13 @@
 					;flycheck             ;
    color-theme	        ; nice looking emacs
    color-theme-tango    ; check out color-theme-solarized
+   discover             ;
    org-mode
    epresent             ;Emacs Org-Mode Presentations
    multiple-cursors     ;multiple cursors mode
    helm                 ;Better completion browsing
    helm-company         ;
-   ;helm-gitlab          ;
+					;helm-gitlab          ;
    irony-mode           ;Clang based completion
    auctex               ;Latex Mode
    multi-term           ;terminal-emulator
@@ -80,6 +76,7 @@
    aggressive-indent-mode    ;changes indentation as you type
    dash-at-point        ;Show documentation and snippets
    helm-dash            ;Search documentation with helm
+   ein                  ;edit ipython noteboos
    ))	
 
 ;;
@@ -92,9 +89,9 @@
 
 (when (el-get-executable-find "svn")
   (loop for p in '(psvn ; M-x svn-status
-yasnippet	; powerful snippet mode
-)
-do (add-to-list 'my:el-get-packages p)))
+		   yasnippet	; powerful snippet mode
+		   )
+	do (add-to-list 'my:el-get-packages p)))
 
 (setq my:el-get-packages
       (append
@@ -284,10 +281,6 @@ do (add-to-list 'my:el-get-packages p)))
 	    (flyspell-prog-mode)))
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-
-;; Coding perspectives using e2wm
-(require 'e2wm)
-(global-set-key (kbd "M-+") 'e2wm:start-management)
 
 
 ;; cppcm-utils cmake-mode
