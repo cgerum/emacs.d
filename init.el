@@ -17,16 +17,12 @@
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
 
-(unless (require 'el-get nil 'noerror)
-  (require 'package)
-  (add-to-list 'package-archives
-               '("melpa" . "http://melpa.org/packages/"))
-  (package-refresh-contents)
-  (package-initialize)
-  (package-install 'el-get)
-  (require 'el-get))
-
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
+(unless (require 'el-get nil t)
+  (url-retrieve
+   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
+   (lambda (s)
+     (end-of-buffer)
+     (eval-print-last-sexp))))
 
 ;; set local recipes
 (setq
@@ -83,6 +79,7 @@
    semantic-refactor         ;Refactoring for C++
    doxymacs                  ;Editing for doxygen comments
    projectile                ;project management for emacs
+   ein                       ;edit ipython notebooks
    ))	
 
 ;;
@@ -95,9 +92,9 @@
 
 (when (el-get-executable-find "svn")
   (loop for p in '(psvn ; M-x svn-status
-yasnippet	; powerful snippet mode
-)
-do (add-to-list 'my:el-get-packages p)))
+		   yasnippet	; powerful snippet mode
+		   )
+	do (add-to-list 'my:el-get-packages p)))
 
 (setq my:el-get-packages
       (append
