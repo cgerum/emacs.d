@@ -418,6 +418,58 @@
                                (call-interactively 'compile)))
 
 
+;; C-Styles
+;; Add a cc-mode style for editing LLVM C++ code
+(c-add-style "llvm.org"
+             '((fill-column . 80)
+	       (c++-indent-level . 2)
+	       (c-basic-offset . 2)
+	       (indent-tabs-mode . nil)
+	       (c-offsets-alist . ((arglist-intro . ++)
+				   (innamespace . 0)
+				   (member-init-intro . ++)
+				   ))
+               ))
+
+;; Files with "llvm" in their names will automatically be set to the
+;; llvm.org coding style.
+;;(add-hook 'c-mode-hook
+;; 	  (function
+;; 	   (lambda nil 
+;; 	     (if (string-match "llvm" buffer-file-name)
+;; 		 (progn
+;; 		   (c-set-style "llvm.org")
+;; 		   )
+;; 	       ))))
+;; 
+;;(add-hook 'c++-mode-hook
+;; 	  (function
+;; 	   (lambda nil 
+;; 	     (if (string-match "llvm" buffer-file-name)
+;; 		 (progn
+;; 		   (c-set-style "llvm.org")
+;; 		   )
+;; 	       ))))
+
+
+;; Use llvm.org as default coding style
+(add-hook 'c-mode-hook
+	  (function
+	   (lambda nil 
+	     (progn
+	       (c-set-style "llvm.org")
+	       )
+	     )))
+
+(add-hook 'c++-mode-hook
+	  (function
+	   (lambda nil 
+	     (progn
+	       (c-set-style "llvm.org")
+	       )
+	     )))
+
+
 
 
 (provide 'init)
