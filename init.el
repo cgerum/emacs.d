@@ -51,35 +51,38 @@
 ;; now set our own packages
 (setq
  my:el-get-packages
- '(escreen              ; screen for emacs, C-\ C-h
-   e2wm                 ; Code-Perspectives for Emacs
-   switch-window	; takes over C-x o
-   company-mode         ; autocompletion support
-   company-irony        ; 
-   company-c-headers    ;
-   company-anaconda     ;
-   company-math         ;
-   company-auctex       ;
-					;flycheck             ;
-   color-theme	        ; nice looking emacs
-   color-theme-tango    ; check out color-theme-solarized
-   org-mode
-   epresent             ;Emacs Org-Mode Presentations
-   multiple-cursors     ;multiple cursors mode
-   helm                 ;Better completion browsing
-   helm-company         ;
-   ;helm-gitlab          ;
-   irony-mode           ;Clang based completion
-   auctex               ;Latex Mode
-   multi-term           ;terminal-emulator
+ '(anaconda-mode             ; python command completion
+   switch-window	     ; takes over C-x o
+   company-mode              ; autocompletion support
+   company-irony             ; 
+   company-c-headers         ;
+   company-anaconda          ;
+   company-math              ;
+   company-auctex            ;
+   company-web               ;
+   flycheck                  ;
+   flycheck-irony            ;
+   color-theme	             ; nice looking emacs
+   color-theme-tango         ; check out color-theme-solarized
+   org-mode		      
+   epresent                  ;Emacs Org-Mode Presentations
+   multiple-cursors          ;multiple cursors mode
+   helm                      ;Better completion browsing
+   helm-company              ;
+   irony-mode                ;Clang based completion
+   auctex                    ;Latex Mode
+   multi-term                ;terminal-emulator
    cpputils-cmake
-   org-reveal            ; html5 slides for org-mode
+   org-reveal                ; html5 slides for org-mode
    fill-column-indicator
    cmake-mode
-   yaml-mode            ;syntax highlighting for yaml
+   yaml-mode                 ;syntax highlighting for yaml
    aggressive-indent-mode    ;changes indentation as you type
-   dash-at-point        ;Show documentation and snippets
-   helm-dash            ;Search documentation with helm
+   dash-at-point             ;Show documentation and snippets
+   helm-dash                 ;Search documentation with helm
+   semantic-refactor         ;Refactoring for C++
+   doxymacs                  ;Editing for doxygen comments
+   projectile                ;project management for emacs
    ))	
 
 ;;
@@ -226,6 +229,22 @@ do (add-to-list 'my:el-get-packages p)))
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (setq reftex-plug-into-AUCTeX t)
 
+
+
+;;Anaconda mode for python completions 
+(add-hook 'python-mode-hook
+	  #'(lambda ()
+              (add-to-list 'python-shell-extra-pythonpaths "/local/gerum/projects/timing/timing-annotation")
+	      (when (projectile-project-p)
+		(add-to-list 'python-shell-extra-pythonpaths projectile-project-root)
+		
+		(message "project root is %s."
+			 (projectile-project-root))
+              (anaconda-mode)
+              (anaconda-eldoc-mode))))
+
+
+
 ;;Company-Mode
 (add-hook 'after-init-hook 'global-company-mode)
 
@@ -268,8 +287,15 @@ do (add-to-list 'my:el-get-packages p)))
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-c-headers))
 
+
+;;Enable projectile for to set globals
+(require 'projectile)
+(projectile-global-mode)
+
+
+
 ;;Flycheck syntax checking for emacs
-;(add-hook 'after-init-hook 'global-flycheck-mode)
+;;(add-hook 'after-init-hook 'global-flycheck-mode)
 
 
 ;;Flyspell
@@ -285,10 +311,6 @@ do (add-to-list 'my:el-get-packages p)))
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
-;; Coding perspectives using e2wm
-(require 'e2wm)
-(global-set-key (kbd "M-+") 'e2wm:start-management)
-
 
 ;; cppcm-utils cmake-mode
 (require 'cpputils-cmake)
@@ -303,8 +325,18 @@ do (add-to-list 'my:el-get-packages p)))
 
 ;; avoid typing full path when starting gdb
 (global-set-key (kbd "C-c C-g")
- '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
+		'(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
 
+
+;; Doxymacs mode for doxygen Editing
+
+;; Automatically load it for c and c++ and python
+(add-hook 'c-mode-common-hook 'doxymacs-mode)
+
+(defun custom-doxymacs-font-lock-hook ()
+  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+      (doxymacs-font-lock)))
+(add-hook 'font-lock-mode-hook 'custom-doxymacs-font-lock-hook)
 
 
 ;;Macros for org-mode
@@ -368,5 +400,47 @@ do (add-to-list 'my:el-get-packages p)))
 
 (put 'scroll-left 'disabled nil)
 
+;; Semantic refactoring and additional code completion
+
+(require 'srefactor)
+(semantic-mode 1) 
+
+(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+
+
+;;GUD Configuration
+;;(setq gdb-many-windows t)
+(setq gdb-show-main t)
+(setq gud-tooltip-mode t)
+
+;; F5 now allows compiling the project0123
+(global-set-key (kbd "<f5>") (lambda ()
+                               (interactive)
+                               (setq-local compilation-read-command nil)
+                               (call-interactively 'compile)))
+
+
+
+
 (provide 'init)
 ;;; init.el ends here
+
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(srefactor--getter-prefix "get")
+ '(srefactor--getter-setter-capitalize-p t)
+ '(srefactor--setter-prefix "set"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+(put 'downcase-region 'disabled nil)
