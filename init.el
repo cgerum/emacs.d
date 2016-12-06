@@ -291,8 +291,15 @@
 
 
 
-;;Flycheck syntax checking for emacs
+;;Flycheck syntax checking for+ emacs
+
+;;(if (file-exists-p )
+;;    (setq-default flycheck-c/c++-gcc-executable "/usr/local/Cellar/clang-3.4/bin/clang"))
+;;(setq-default flycheck-c/c++-clang-executable "/usr/local/Cellar/clang-3.4/bin/clang")
+
 (add-hook 'after-init-hook 'global-flycheck-mode)
+;;(eval-after-load 'flycheck
+;;'(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
 
 ;;Flyspell
