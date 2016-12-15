@@ -65,6 +65,10 @@
    multiple-cursors          ;multiple cursors mode
    helm                      ;Better completion browsing
    helm-company              ;
+   helm-dash                 ;Search documentation with helm
+   helm-pydoc                ;Search pydocs with helm
+   helm-c-flycheck           ;
+   helm-c-yasnippet          ;
    irony-mode                ;Clang based completion
    auctex                    ;Latex Mode
    multi-term                ;terminal-emulator
@@ -75,11 +79,18 @@
    yaml-mode                 ;syntax highlighting for yaml
    aggressive-indent-mode    ;changes indentation as you type
    dash-at-point             ;Show documentation and snippets
-   helm-dash                 ;Search documentation with helm
    semantic-refactor         ;Refactoring for C++
    doxymacs                  ;Editing for doxygen comments
    projectile                ;project management for emacs
    ein                       ;edit ipython notebooks
+   avy                       ;navigate to words starting with letters
+   ace-window                ;navigate windows with short letters
+   google-translate
+   define-word
+   markdown-toc
+   markdown-mode
+   git-modes
+   textile-mode
    ))	
 
 ;;
@@ -129,7 +140,11 @@
 (windmove-default-keybindings 'meta)
 (setq windmove-wrap-around t)
 
-; winner-mode provides C-<left> to get back to previous window layout
+;; Navigate windows with ace-window
+(require 'ace-window)
+(global-set-key (kbd "M-p") 'ace-window)
+
+;; winner-mode provides C-<left> to get back to previous window layout
 (winner-mode 1)
 
 
@@ -166,17 +181,35 @@
 ;; when you do that, to kill emacs either close its frame from the window
 ;; manager or do M-x kill-emacs. Don't need a nice shortcut for a once a
 ;; week (or day) action.
-(global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
 (global-set-key (kbd "C-x B") 'ibuffer)
+
+
+;;git
+(require 'gitignore-mode)
+(require 'gitconfig-mode)
+(require 'gitattributes-mode)
+
+
+
 
 ;; C-x C-j opens dired with the cursor right on the file you're editing
 (require 'dired-x)
+
+;;google-translate
+(require 'google-translate)
+(require 'google-translate-smooth-ui)
+(global-set-key "\C-ct" 'google-translate-smooth-translate)
+
+;;define-word
+(require 'define-word)
+(global-set-key "\C-cd" 'define-word-at-point)
+
 
 ;; full screen
 (defun fullscreen ()
   (interactive)
   (set-frame-parameter nil 'fullscreen
-(if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+		       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
 (global-set-key [f11] 'fullscreen)
 
 ;;Settings for org mode
@@ -228,6 +261,15 @@
 
 
 
+;;markdown
+(require 'markdown-mode)
+(require 'markdown-toc)
+
+
+;;textile
+(require 'textile-mode)
+(add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
+
 ;;Anaconda mode for python completions 
 (add-hook 'python-mode-hook
 	  #'(lambda ()
@@ -237,8 +279,12 @@
 		
 		(message "project root is %s."
 			 (projectile-project-root))
-              (anaconda-mode)
-              (anaconda-eldoc-mode))))
+		(anaconda-mode)
+		(anaconda-eldoc-mode))))
+
+(require 'helm-pydoc)
+(with-eval-after-load "python"
+  (define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc))
 
 
 
@@ -291,7 +337,7 @@
 
 
 
-;;Flycheck syntax checking for+ emacs
+;;Flycheck syntax checking for emacs
 
 ;;(if (file-exists-p )
 ;;    (setq-default flycheck-c/c++-gcc-executable "/usr/local/Cellar/clang-3.4/bin/clang"))
@@ -333,6 +379,7 @@
 
 
 ;; Doxymacs mode for doxygen Editing
+(require 'doxymacs)
 
 ;; Automatically load it for c and c++ and python
 (add-hook 'c-mode-common-hook 'doxymacs-mode)
