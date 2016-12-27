@@ -80,9 +80,9 @@
    aggressive-indent-mode    ;changes indentation as you type
    dash-at-point             ;Show documentation and snippets
    semantic-refactor         ;Refactoring for C++
-   doxymacs                  ;Editing for doxygen comments
+					;doxymacs                  ;Editing for doxygen comments
    projectile                ;project management for emacs
-   ein                       ;edit ipython notebooks
+					;ein                       ;edit ipython notebooks
    avy                       ;navigate to words starting with letters
    ace-window                ;navigate windows with short letters
    google-translate
@@ -379,15 +379,15 @@
 
 
 ;; Doxymacs mode for doxygen Editing
-(require 'doxymacs)
+;(require 'doxymacs)
 
 ;; Automatically load it for c and c++ and python
-(add-hook 'c-mode-common-hook 'doxymacs-mode)
+;(add-hook 'c-mode-common-hook 'doxymacs-mode)
 
-(defun custom-doxymacs-font-lock-hook ()
-  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-      (doxymacs-font-lock)))
-(add-hook 'font-lock-mode-hook 'custom-doxymacs-font-lock-hook)
+;(defun custom-doxymacs-font-lock-hook ()
+;  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
+;      (doxymacs-font-lock)))
+;(add-hook 'font-lock-mode-hook 'custom-doxymacs-font-lock-hook)
 
 
 ;;Macros for org-mode
