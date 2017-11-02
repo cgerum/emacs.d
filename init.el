@@ -14,106 +14,104 @@
 ;; This file is NOT part of GNU Emacs.
 ;;; Code:
 (require 'cl)	; common lisp goodies, loop
+(require 'cl-lib)
+(require 'package)
 
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(setq package-archives '(("ELPA" . "http://tromey.com/elpa/") 
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
 
-(unless (require 'el-get nil t)
-  (url-retrieve
-   "https://github.com/dimitri/el-get/raw/master/el-get-install.el"
-   (lambda (s)
-     (end-of-buffer)
-     (eval-print-last-sexp))))
+
+
+
+(package-initialize)
+(when (not package-archive-contents)
+    (package-refresh-contents))
 
 ;; set local recipes
-(setq
- el-get-sources
- '((:name buffer-move	; have to add your own keys
-	  :after (progn
-		   (global-set-key (kbd "<C-S-up>") 'buf-move-up)
-		   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
-		   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
-		   (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
-
-   (:name magit	; git meet emacs, and a binding
-	  :after (progn()
-		       (global-set-key (kbd "C-x C-z") 'magit-status)))
-   
-   (:name goto-last-change	; move pointer back to last change
-	  :after (progn
-		   ;; when using AZERTY keyboard, consider C-x C-_
-		   (global-set-key (kbd "C-x C-_") 'goto-last-change)))))
+;;(setq
+;; el-get-sources
+;; '((:name buffer-move	; have to add your own keys
+;; 	  :after (progn
+;; 		   (global-set-key (kbd "<C-S-up>") 'buf-move-up)
+;; 		   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
+;; 		   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
+;; 		   (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
+;; 
+;;   ;;(:name magit	; git meet emacs, and a binding
+;;   ;; 	  :after (progn()
+;;   ;; 		       (global-set-key (kbd "C-x C-z") 'magit-status)))
+;;   
+;;   (:name goto-last-change	; move pointer back to last change
+;; 	  :after (progn
+;; 		   ;; when using AZERTY keyboard, consider C-x C-_
+;; 		   (global-set-key (kbd "C-x C-_") 'goto-last-change)))))
 
 
 ;; now set our own packages
 (setq
- my:el-get-packages
+ my/packages
  '(anaconda-mode             ; python command completion
    switch-window	     ; takes over C-x o
-   company-mode              ; autocompletion support
+   company                   ; autocompletion support
    company-irony             ; 
-   company-c-headers         ;
    company-anaconda          ;
+   company-cmake 
    company-math              ;
-   company-auctex            ;
+   company-emoji             ;
+   
+   ;;company-auctex            ;
    company-web               ;
    flycheck                  ;
    flycheck-irony            ;
    color-theme	             ; nice looking emacs
    color-theme-tango         ; check out color-theme-solarized
-   org-mode		      
-   epresent                  ;Emacs Org-Mode Presentations
+   org		      
+   ;;epresent                  ;Emacs Org-Mode Presentations
    multiple-cursors          ;multiple cursors mode
-   helm                      ;Better completion browsing
-   helm-company              ;
-   helm-dash                 ;Search documentation with helm
-   helm-pydoc                ;Search pydocs with helm
-   helm-c-flycheck           ;
-   helm-c-yasnippet          ;
-   irony-mode                ;Clang based completion
+   ;;magit
+   ;;helm                      ;Better completion browsing
+   ;;helm-company		  ;
+   ;;helm-dash		  ;Search documentation with helm
+   ;;helm-pydoc		  ;Search pydocs with helm
+   ;;helm-c-flycheck		  ;
+   ;;helm-c-yasnippet	  ;
+   irony                ;Clang based completion
    auctex                    ;Latex Mode
    multi-term                ;terminal-emulator
    cpputils-cmake
-   org-reveal                ; html5 slides for org-mode
    fill-column-indicator
    cmake-mode
    yaml-mode                 ;syntax highlighting for yaml
-   aggressive-indent-mode    ;changes indentation as you type
-   dash-at-point             ;Show documentation and snippets
-   semantic-refactor         ;Refactoring for C++
-					;doxymacs                  ;Editing for doxygen comments
+   ;;semantic-refactor         ;Refactoring for C++
+  ;;doxymacs                  ;Editing for doxygen comments
    projectile                ;project management for emacs
-					;ein                       ;edit ipython notebooks
    avy                       ;navigate to words starting with letters
    ace-window                ;navigate windows with short letters
    google-translate
+   gitignore-mode
    define-word
    markdown-toc
-   markdown-mode
-   git-modes
-   textile-mode
+   gitconfig-mode
+   gitattributes-mode
+   ;;gitlab
+   ;;markdown-preview-mode
+   ;;textile-mode
+   yasnippet
    ))	
 
-;;
-;; Some recipes require extra tools to be installed
-;;
-;; Note: el-get-install requires git, so we know we have at least that.
-;;
-(when (el-get-executable-find "cvs")
-  (add-to-list 'my:el-get-packages 'emacs-goodies-el)) ; the debian addons for emacs
+(defun my/install-packages ()
+  "Ensure the packages I use are installed. See `my/packages'."
+  (interactive)
+  (let ((missing-packages (cl-remove-if #'package-installed-p my/packages)))
+    (when missing-packages
+      (message "Installing %d missing package(s)" (length missing-packages))
+      (package-refresh-contents)
+      (mapc #'package-install missing-packages))))
 
-(when (el-get-executable-find "svn")
-  (loop for p in '(psvn ; M-x svn-status
-		   yasnippet	; powerful snippet mode
-		   )
-	do (add-to-list 'my:el-get-packages p)))
+(my/install-packages)
 
-(setq my:el-get-packages
-      (append
-       my:el-get-packages
-       (loop for src in el-get-sources collect (el-get-source-name src))))
-
-;; install new packages and init already installed packages
-(el-get 'sync my:el-get-packages)
 
 ;; on to the visual settings
 (set-default-font "Liberation Mono 14") ;Select default font
@@ -170,12 +168,12 @@
 (define-key term-raw-map (kbd "C-y") 'term-paste)
 
 ;;Enable Helm Mode for completion
-(global-set-key (kbd "M-x")       'undefined)
-(global-set-key (kbd "M-x")       'helm-M-x)
-(global-set-key (kbd "C-x r b")   'helm-filtered-bookmarks)
-(global-set-key (kbd "C-x C-f")   'helm-find-files)
+;(global-set-key (kbd "M-x")	   'undefined)
+;(global-set-key (kbd "M-x")	   'helm-M-x)
+;(global-set-key (kbd "C-x r b")   'helm-filtered-bookmarks)
+;(global-set-key (kbd "C-x C-f")   'helm-find-files)
 
-(helm-mode 1)
+;(helm-mode 1)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
 ;; when you do that, to kill emacs either close its frame from the window
@@ -267,8 +265,8 @@
 
 
 ;;textile
-(require 'textile-mode)
-(add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
+;;(require 'textile-mode)
+;;(add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
 
 ;;Anaconda mode for python completions 
 (add-hook 'python-mode-hook
@@ -279,13 +277,10 @@
 		
 		(message "project root is %s."
 			 (projectile-project-root))
-		(anaconda-mode)
-		(anaconda-eldoc-mode))))
+		(anaconda-mode))))
 
-(require 'helm-pydoc)
-(with-eval-after-load "python"
-  (define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc))
-
+;(require 'helm-pydoc)
+;(define-key python-mode-map (kbd "C-c C-d") 'helm-pydoc)
 
 
 ;;Company-Mode
@@ -435,13 +430,6 @@
 ;; TRAMP
 (setq tramp-default-method "ssh")
 
-;;Aggressive init mode for c++
-(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-(add-hook 'ruby-mode-hook #'aggressive-indent-mode)
-(add-hook 'scala-mode-hook #'aggressive-indent-mode)
-(add-hook 'cc-mode-hook #'aggressive-indent-mode)
-
 ;; uniquify.el is a helper routine to help give buffer names a better unique name.
 (when (load "uniquify" 'NOERROR)
   (require 'uniquify)
@@ -453,11 +441,11 @@
 
 ;; Semantic refactoring and additional code completion
 
-(require 'srefactor)
-(semantic-mode 1) 
-
-(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;;(require 'srefactor)
+;;(semantic-mode 1) 
+;; 
+;;(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
+;;(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
 
 
 ;;GUD Configuration
