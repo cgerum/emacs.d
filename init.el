@@ -20,33 +20,12 @@
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/") 
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
-
-
+                         ("melpa" . "http://melpa.org/packages/")))
 
 
 (package-initialize)
 (when (not package-archive-contents)
     (package-refresh-contents))
-
-;; set local recipes
-;;(setq
-;; el-get-sources
-;; '((:name buffer-move	; have to add your own keys
-;; 	  :after (progn
-;; 		   (global-set-key (kbd "<C-S-up>") 'buf-move-up)
-;; 		   (global-set-key (kbd "<C-S-down>") 'buf-move-down)
-;; 		   (global-set-key (kbd "<C-S-left>") 'buf-move-left)
-;; 		   (global-set-key (kbd "<C-S-right>") 'buf-move-right)))
-;; 
-;;   ;;(:name magit	; git meet emacs, and a binding
-;;   ;; 	  :after (progn()
-;;   ;; 		       (global-set-key (kbd "C-x C-z") 'magit-status)))
-;;   
-;;   (:name goto-last-change	; move pointer back to last change
-;; 	  :after (progn
-;; 		   ;; when using AZERTY keyboard, consider C-x C-_
-;; 		   (global-set-key (kbd "C-x C-_") 'goto-last-change)))))
 
 
 ;; now set our own packages
@@ -60,32 +39,24 @@
    company-cmake 
    company-math              ;
    company-emoji             ;
-   
-   ;;company-auctex            ;
+   company-lsp               ;
    company-web               ;
    flycheck                  ;
-   flycheck-irony            ;
    color-theme	             ; nice looking emacs
    color-theme-tango         ; check out color-theme-solarized
    org		      
-   ;;epresent                  ;Emacs Org-Mode Presentations
    multiple-cursors          ;multiple cursors mode
-   ;;magit
-   ;;helm                      ;Better completion browsing
-   ;;helm-company		  ;
-   ;;helm-dash		  ;Search documentation with helm
-   ;;helm-pydoc		  ;Search pydocs with helm
-   ;;helm-c-flycheck		  ;
-   ;;helm-c-yasnippet	  ;
-   irony                ;Clang based completion
-   auctex                    ;Latex Mode
+   helm                      ;Better completion browsing
+   helm-company		  ;
+   helm-dash		  ;Search documentation with helm
+   helm-pydoc		  ;Search pydocs with helm
+   helm-c-yasnippet	  ;
+   ;auctex                    ;Latex Mode
    multi-term                ;terminal-emulator
    cpputils-cmake
    fill-column-indicator
    cmake-mode
    yaml-mode                 ;syntax highlighting for yaml
-   ;;semantic-refactor         ;Refactoring for C++
-  ;;doxymacs                  ;Editing for doxygen comments
    projectile                ;project management for emacs
    avy                       ;navigate to words starting with letters
    ace-window                ;navigate windows with short letters
@@ -95,10 +66,11 @@
    markdown-toc
    gitconfig-mode
    gitattributes-mode
-   ;;gitlab
-   ;;markdown-preview-mode
    ;;textile-mode
    yasnippet
+   yasnippet-snippets
+   lsp-mode
+   lsp-ui
    ))	
 
 (defun my/install-packages ()
@@ -229,7 +201,6 @@
    (org . t)
    (plantuml . t)
    (python . t)
-   (sh . t)
    )
  )
 
@@ -310,21 +281,6 @@
 
 (global-set-key [tab] 'tab-indent-or-complete)
 
-;; Company Irony
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-irony))
-
-(add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-
-;;Company Anaconda
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-anaconda))
-
-
-;;Company C-Headers
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-c-headers))
-
 
 ;;Enable projectile for to set globals
 (require 'projectile)
@@ -334,13 +290,6 @@
 
 ;;Flycheck syntax checking for emacs
 
-;;(if (file-exists-p )
-;;    (setq-default flycheck-c/c++-gcc-executable "/usr/local/Cellar/clang-3.4/bin/clang"))
-;;(setq-default flycheck-c/c++-clang-executable "/usr/local/Cellar/clang-3.4/bin/clang")
-
-(add-hook 'after-init-hook 'global-flycheck-mode)
-;;(eval-after-load 'flycheck
-;;'(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
 
 
 ;;Flyspell
@@ -515,23 +464,25 @@
 
 
 (provide 'init)
-;;; init.el ends here
 
+
+(require 'lsp-mode)
+(require 'lsp-clients)
+(add-hook 'prog-mode-hook #'lsp)
+
+;;; init.el ends here
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(srefactor--getter-prefix "get")
- '(srefactor--getter-setter-capitalize-p t)
- '(srefactor--setter-prefix "set"))
+ '(package-selected-packages
+   (quote
+    (lsp-ui company-lsp yaml-mode switch-window srefactor projectile multiple-cursors multi-term markdown-toc magit lsp-mode helm-pydoc helm-dash helm-company helm-c-yasnippet google-translate gitignore-mode gitconfig-mode gitattributes-mode flycheck-irony fill-column-indicator define-word cpputils-cmake company-web company-math company-irony company-emoji company-cmake company-anaconda color-theme-tango cmake-mode auctex ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-
-(put 'downcase-region 'disabled nil)
