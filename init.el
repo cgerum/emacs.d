@@ -140,12 +140,10 @@
 (define-key term-raw-map (kbd "C-y") 'term-paste)
 
 ;;Enable Helm Mode for completion
-;(global-set-key (kbd "M-x")	   'undefined)
-;(global-set-key (kbd "M-x")	   'helm-M-x)
-;(global-set-key (kbd "C-x r b")   'helm-filtered-bookmarks)
-;(global-set-key (kbd "C-x C-f")   'helm-find-files)
+(global-set-key (kbd "M-x")	   'helm-M-x)
+(global-set-key (kbd "C-x C-f")   'helm-find-files)
 
-;(helm-mode 1)
+(helm-mode 1)
 
 ;; default key to switch buffer is C-x b, but that's not easy enough
 ;; when you do that, to kill emacs either close its frame from the window
