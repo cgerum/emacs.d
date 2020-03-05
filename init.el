@@ -66,7 +66,7 @@
    markdown-toc
    gitconfig-mode
    gitattributes-mode
-   ;;textile-mode
+   textile-mode
    yasnippet
    yasnippet-snippets
    lsp-mode
@@ -96,6 +96,7 @@
 
 (global-hl-line-mode)	; highlight current line
 (global-linum-mode 1)	; add line numbers on the left
+(global-auto-revert-mode t) ; Automatically reload changed files
 
 ;; avoid compiz manager rendering bugs
 (add-to-list 'default-frame-alist '(alpha . 100))
@@ -156,8 +157,6 @@
 (require 'gitignore-mode)
 (require 'gitconfig-mode)
 (require 'gitattributes-mode)
-
-
 
 
 ;; C-x C-j opens dired with the cursor right on the file you're editing
@@ -234,8 +233,8 @@
 
 
 ;;textile
-;;(require 'textile-mode)
-;;(add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
+(require 'textile-mode)
+(add-to-list 'auto-mode-alist '("\\.textile\\'" . textile-mode))
 
 ;;Anaconda mode for python completions 
 (add-hook 'python-mode-hook
@@ -291,16 +290,6 @@
 
 
 ;;Flyspell
-(add-hook 'c-mode-hook 
-	  (lambda ()
-	    (flyspell-prog-mode)))
-(add-hook 'c++-mode-hook 
-	  (lambda ()
-	    (flyspell-prog-mode)))
-(add-hook 'python-mode-hook 
-	  (lambda ()
-	    (flyspell-prog-mode)))
-
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
 
@@ -318,18 +307,6 @@
 ;; avoid typing full path when starting gdb
 (global-set-key (kbd "C-c C-g")
 		'(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
-
-
-;; Doxymacs mode for doxygen Editing
-;(require 'doxymacs)
-
-;; Automatically load it for c and c++ and python
-;(add-hook 'c-mode-common-hook 'doxymacs-mode)
-
-;(defun custom-doxymacs-font-lock-hook ()
-;  (if (or (eq major-mode 'c-mode) (eq major-mode 'c++-mode))
-;      (doxymacs-font-lock)))
-;(add-hook 'font-lock-mode-hook 'custom-doxymacs-font-lock-hook)
 
 
 ;;Macros for org-mode
@@ -386,15 +363,6 @@
 
 (put 'scroll-left 'disabled nil)
 
-;; Semantic refactoring and additional code completion
-
-;;(require 'srefactor)
-;;(semantic-mode 1) 
-;; 
-;;(define-key c-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-;;(define-key c++-mode-map (kbd "M-RET") 'srefactor-refactor-at-point)
-
-
 ;;GUD Configuration
 ;;(setq gdb-many-windows t)
 (setq gdb-show-main t)
@@ -420,27 +388,6 @@
 				   ))
                ))
 
-;; Files with "llvm" in their names will automatically be set to the
-;; llvm.org coding style.
-;;(add-hook 'c-mode-hook
-;; 	  (function
-;; 	   (lambda nil 
-;; 	     (if (string-match "llvm" buffer-file-name)
-;; 		 (progn
-;; 		   (c-set-style "llvm.org")
-;; 		   )
-;; 	       ))))
-;; 
-;;(add-hook 'c++-mode-hook
-;; 	  (function
-;; 	   (lambda nil 
-;; 	     (if (string-match "llvm" buffer-file-name)
-;; 		 (progn
-;; 		   (c-set-style "llvm.org")
-;; 		   )
-;; 	       ))))
-
-
 ;; Use llvm.org as default coding style
 (add-hook 'c-mode-hook
 	  (function
@@ -461,13 +408,13 @@
 
 
 
-(provide 'init)
 
 
 (require 'lsp-mode)
 (require 'lsp-clients)
 (add-hook 'prog-mode-hook #'lsp)
 
+(provide 'init)
 ;;; init.el ends here
 
 (custom-set-variables
@@ -484,3 +431,5 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
