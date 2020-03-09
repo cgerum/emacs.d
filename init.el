@@ -51,7 +51,7 @@
    helm-dash		  ;Search documentation with helm
    helm-pydoc		  ;Search pydocs with helm
    helm-c-yasnippet	  ;
-   ;auctex                    ;Latex Mode
+   auctex                    ;Latex Mode
    multi-term                ;terminal-emulator
    cpputils-cmake
    fill-column-indicator
@@ -86,7 +86,8 @@
 
 
 ;; on to the visual settings
-(set-default-font "Liberation Mono 14") ;Select default font
+;(set-default-font "Liberation Mono 14") ;Select default font
+(set-default-font "DejaVu Sans Mono 14") ;Select default font
 (setq inhibit-splash-screen t)	; no splash screen, thanks
 (line-number-mode 1)	; have line numbers and
 (column-number-mode 1)	; column numbers in the mode line
