@@ -1,6 +1,6 @@
 ;;; package --- Emacs initialization file
 ;;; Commentary: 
-;; Copyright: (C) 2013-2016 Christoph Gerum
+;; Copyright: (C) 2013-2020 Christoph Gerum
 ;; Based on
 ;; emacs kicker --- kick start emacs setup
 ;; Copyright (C) 2010 Dimitri Fontaine
@@ -71,6 +71,7 @@
    yasnippet-snippets
    lsp-mode
    lsp-ui
+   editorconfig
    ))	
 
 (defun my/install-packages ()
@@ -152,6 +153,7 @@
 ;; week (or day) action.
 (global-set-key (kbd "C-x B") 'ibuffer)
 
+(editorconfig-mode 1)
 
 ;;git
 (require 'gitignore-mode)
